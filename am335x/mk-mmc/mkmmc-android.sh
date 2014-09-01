@@ -4,15 +4,15 @@ EXPECTED_ARGS=1
 if [ $# == $EXPECTED_ARGS ]
 then
 	echo "Assuming Default Locations for Prebuilt Images"
-	$0 $1 Boot_Images/MLO Boot_Images/u-boot.img Boot_Images/uImage Boot_Images/uEnv.txt Filesystem/rootfs* Media_Clips START_HERE
+	$0 $1 Boot_Images/MLO Boot_Images/u-boot.img Boot_Images/zImage Boot_Images/uEnv.txt Boot_Images/dtbs/am335x-boneblack.dtb Filesystem/rootfs* Media_Clips START_HERE
 	exit
 fi
 
-if [[ -z $1 || -z $2 || -z $3 || -z $4 ]]
+if [[ -z $1 || -z $2 || -z $3 || -z $4 || -z $5 || -z $6 ]]
 then
 	echo "mkmmc-android Usage:"
-	echo "	mkmmc-android <device> <MLO> <u-boot.img> <uImage> <uEnv.txt> <rootfs tar.bz2 > <Optional Media_Clips> <Optional START_HERE folder>"
-	echo "	Example: mkmmc-android /dev/sdc MLO u-boot.img uImage uEnv.txt rootfs.tar.bz2 Media_Clips START_HERE"
+	echo "	mkmmc-android <device> <MLO> <u-boot.img> <zImage> <uEnv.txt> <am335x-boneblack.dtb> <rootfs tar.bz2> <Optional Media_Clips> <Optional START_HERE folder>"
+	echo "	Example: mkmmc-android /dev/sdc MLO u-boot.img zImage uEnv.txt am335x-boneblack.dtb rootfs.tar.bz2 Media_Clips START_HERE"
 	exit
 fi
 
@@ -30,7 +30,7 @@ fi
 
 if ! [[ -e $4 ]]
 then
-	echo "Incorrect uImage location!"
+	echo "Incorrect zImage location!"
 	exit
 fi
 
@@ -41,6 +41,12 @@ then
 fi
 
 if ! [[ -e $6 ]]
+then
+	echo "Incorrect am335x-boneblack.dtb!"
+	exit
+fi
+
+if ! [[ -e $7 ]]
 then
 	echo "Incorrect rootfs location!"
 	exit
@@ -93,26 +99,29 @@ echo "[Copying files...]"
 mount ${DRIVE}1 /mnt
 cp $2 /mnt/MLO
 cp $3 /mnt/u-boot.img
-cp $4 /mnt/uImage
+cp $4 /mnt/zImage
 cp $5 /mnt/uEnv.txt
-if [ "$8" ]
+mkdir /mnt/dtbs
+cp $6 /mnt/dtbs/am335x-boneblack.dtb
+
+if [ "$9" ]
 then
         echo "[Copying START_HERE folder to boot partition]"
-        cp -r $8 /mnt/START_HERE
+        cp -r $9 /mnt/START_HERE
 fi
 
 umount ${DRIVE}1
 
 mount ${DRIVE}2 /mnt
-tar jxvf $6 -C /mnt &> /dev/null
+tar jxvf $7 -C /mnt &> /dev/null
 chmod 755 /mnt
 umount ${DRIVE}2
 
-if [ "$7" ]
+if [ "$8" ]
 then
 	echo "[Copying all clips to data partition]"
 	mount ${DRIVE}4 /mnt
-	cp -r $7/* /mnt/
+	cp -r $8/* /mnt/
 	umount ${DRIVE}4
 fi
 
