@@ -10,7 +10,7 @@ loadfdt=load mmc ${mmcdev}:${mmcpart} 0x815f0000 /dtbs/${fdtfile}
  
 boot_ftd=run loadkernel; run loadfdt
 
-mmcargs=setenv bootargs acpi=noirq console=blank vt.global_cursor_default=0 mpurate=1000 video=720x480-16@60 console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} init=/init
+mmcargs=setenv bootargs consoleblank=0 androidboot.console=ttyO0 mem=512M acpi=noirq vt.global_cursor_default=0 mpurate=1000 video=720x480-16@60 qemu=1 console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} init=/init ip=off
 
 uenvcmd=run boot_ftd; run mmcargs; bootz 0x80200000 - 0x815f0000
 
