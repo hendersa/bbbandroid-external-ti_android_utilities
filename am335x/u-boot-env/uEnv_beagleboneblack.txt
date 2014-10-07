@@ -1,7 +1,7 @@
 kernel_file=zImage
 
 console=ttyO0,115200n8
-
+#video_res=video=720x480-16@60
 mmcroot=/dev/mmcblk0p2 rw
 mmcrootfstype=ext4 rootwait fixrtc
  
@@ -10,12 +10,7 @@ loadfdt=load mmc ${mmcdev}:${mmcpart} 0x815f0000 /dtbs/${fdtfile}
  
 boot_ftd=run loadkernel; run loadfdt
 
-mmcargs=setenv bootargs consoleblank=0 androidboot.console=ttyO0 mem=512M acpi=noirq vt.global_cursor_default=0 mpurate=1000 video=720x480-16@60 qemu=1 console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} init=/init ip=off
+mmcargs=setenv bootargs consoleblank=0 androidboot.console=ttyO0 mem=512M acpi=noirq vt.global_cursor_default=0 mpurate=1000 ${video_res} qemu=1 console=${console} root=${mmcroot} rootfstype=${mmcrootfstype} init=/init ip=off g_ffs.idVendor=0x18d1 g_ffs.idProduct=0x4e26 g_ffs.iSerialNumber=BBBANDROID
 
 uenvcmd=run boot_ftd; run mmcargs; bootz 0x80200000 - 0x815f0000
-
-# Original uEnv.txt follows
-#bootargs=console=ttyO0,115200n8 androidboot.console=ttyO0 mem=512M root=/dev/mmcblk0p2 rw rootfstype=ext4 rootwait init=/init ip=off
-#bootcmd=mmc rescan ; fatload mmc 0 81000000 uImage ; bootm 81000000
-#uenvcmd=boot
 
